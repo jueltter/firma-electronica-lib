@@ -71,7 +71,7 @@ public final class FirmadorPDF {
         return certificateWrapper;
     }
 
-    public byte[] firmar(File temp, int pagina, int x, Point point) throws Exception {        
+    public byte[] firmar(File temp, int pagina, Point point) throws Exception {        
         return firmar(keyStore, defaultAlias, temp, passwordAsString.toCharArray(), point, pagina, "", "Firma Visible");
     }
     

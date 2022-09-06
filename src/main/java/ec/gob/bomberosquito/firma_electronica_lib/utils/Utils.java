@@ -1,4 +1,4 @@
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.utils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -240,16 +240,6 @@ public class Utils {
 
     public static boolean esValido(X509Certificate cert, Date signingTime) {
         return (!signingTime.before(cert.getNotBefore()) && !signingTime.after(cert.getNotAfter()));
-    }
-
-    public static PDFSigner documentSigner(File documento) {
-        String extDocumento = FileUtils.getFileExtension(documento);
-        switch (extDocumento.toLowerCase()) {
-            case "pdf":
-                return new PDFSigner();
-
-        }
-        return null;
     }
 
     public static String validarFirma(Calendar fechaDesde, Calendar fechaHasta, Calendar fechaFirmado, Calendar fechaRevocado) {

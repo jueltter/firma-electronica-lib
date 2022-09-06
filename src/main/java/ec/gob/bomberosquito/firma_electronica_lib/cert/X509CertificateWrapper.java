@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.cert;
 
 import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;

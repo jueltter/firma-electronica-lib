@@ -1,9 +1,14 @@
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.utils;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.KeyStoreSpi;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -101,6 +106,16 @@ public class KeyStoreUtilities {
             return aliasList;
         } catch (KeyStoreException e) {
             throw new IllegalStateException(e);
+        }
+    }
+    
+    public static KeyStore getKeystore(String certPathname, char[] password) throws KeyStoreException {
+        try ( InputStream input = new FileInputStream(certPathname);) {
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(input, password);
+            return keyStore;
+        } catch (NoSuchAlgorithmException | CertificateException | IOException e) {
+            throw new KeyStoreException(e);
         }
     }
 }

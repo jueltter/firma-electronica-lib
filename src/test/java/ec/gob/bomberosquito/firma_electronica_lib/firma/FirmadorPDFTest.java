@@ -5,6 +5,8 @@
  */
 package ec.gob.bomberosquito.firma_electronica_lib.firma;
 
+import ec.gob.bomberosquito.firma_electronica_lib.signer.PDFSigner;
+import ec.gob.bomberosquito.firma_electronica_lib.SignerException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,6 +41,6 @@ public class FirmadorPDFTest {
 
     @Test
     public void validarCertificadoTest() throws SignerException {
-        assertEquals(true, FirmadorPDF.areCertpathnameAndPasswordCorrect(FirmadorPDFTest.class.getResource("/certificado.p12").getFile(), "password"));
+        assertEquals(true, PDFSigner.areCertpathnameAndPasswordCorrect(FirmadorPDFTest.class.getResource("/certificado.p12").getFile(), "password"));
     }
 }

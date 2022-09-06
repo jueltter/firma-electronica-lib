@@ -1,4 +1,4 @@
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.utils;
 
 import com.lowagie.text.Rectangle;
 import java.util.Properties;

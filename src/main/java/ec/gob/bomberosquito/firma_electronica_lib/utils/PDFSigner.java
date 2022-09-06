@@ -1,4 +1,4 @@
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.utils;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.ExceptionConverter;
@@ -21,14 +21,12 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -72,9 +70,7 @@ public class PDFSigner {
     public byte[] sign(byte[] data, String algorithm, PrivateKey key, Certificate[] certChain, Properties xParams) throws IOException, BadPasswordException {
         PdfStamper stp;
         Properties extraParams = (xParams != null) ? xParams : new Properties();
-
-        X509Certificate x509Certificate = (X509Certificate) certChain[0];
-
+        
         String reason = extraParams.getProperty("signingReason");
 
         String location = extraParams.getProperty("signingLocation");
@@ -151,6 +147,7 @@ public class PDFSigner {
 
             if (signaturePositionOnPage != null) {
                 sap.setVisibleSignature(signaturePositionOnPage, page, null);
+                X509Certificate x509Certificate = (X509Certificate) certChain[0];
                 String informacionCertificado = x509Certificate.getSubjectDN().getName();
                 String nombreFirmante = Utils.getCN(x509Certificate).toUpperCase();
                 try {
@@ -269,10 +266,7 @@ public class PDFSigner {
                 }
             }
             
-//            sap.setCrypto(key, certChain, null, PdfSignatureAppearance.WINCER_SIGNED);
-            Certificate[] arrayCertificate = new Certificate[1];
-            arrayCertificate[0] = x509Certificate;
-            sap.setCrypto(key, arrayCertificate, null, PdfSignatureAppearance.WINCER_SIGNED);
+            sap.setCrypto(key, certChain, null, PdfSignatureAppearance.WINCER_SIGNED);
 
             try {
                 stp.close();

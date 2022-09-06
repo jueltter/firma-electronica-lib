@@ -1,4 +1,4 @@
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

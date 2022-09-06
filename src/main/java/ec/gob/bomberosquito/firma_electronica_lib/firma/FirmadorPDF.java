@@ -7,6 +7,7 @@ package ec.gob.bomberosquito.firma_electronica_lib.firma;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -19,9 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Properties;
@@ -30,10 +28,9 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Luis Fernando Ordóñez Armijos
- * @version 20 de Agosto de 2019
+ * @author samagua
  */
-public class FirmadorPDF {
+public final class FirmadorPDF {
 
     private static final Logger LOG = Logger.getLogger(FirmadorPDF.class.getName());    
     
@@ -41,50 +38,37 @@ public class FirmadorPDF {
     private final String certPathname;
     private final KeyStore keyStore;
     private final String defaultAlias;
-    private final X509Certificate certificate;
+    private final CertificateWrapper<X509Certificate> certificateWrapper;
     
-    public FirmadorPDF(String certPathname, String passwordAsString) {
+    public static FirmadorPDF getDefaultInstance() throws SignerException {
+        final String certPathname = FirmadorPDF.class.getResource("/certificado.p12").getFile();
+        final String passwordAsString = "password";
+        return new FirmadorPDF(certPathname, passwordAsString);
+    }
+    
+    public static FirmadorPDF getInstance(String certPathname, String passwordAsString) throws SignerException {
+        return new FirmadorPDF(certPathname, passwordAsString);
+    }
+    
+    @SuppressWarnings("UseSpecificCatch")
+    private FirmadorPDF(String certPathname, String passwordAsString) throws SignerException {
         this.certPathname = certPathname;
         this.passwordAsString = passwordAsString;
         LOG.log(Level.INFO, "certPathname: {0}", this.certPathname);
 
-        KeyStore ks = null;
-        String alias = null;
-        X509Certificate cert = null;
         try {
-            KeyStoreProvider ksp = new KeyStoreProvider(new File(this.certPathname));
-            ks = ksp.getKeystore(this.passwordAsString.toCharArray());
-            alias = CertUtils.seleccionarAlias(ks);
-            cert = ((X509Certificate) ks.getCertificate(alias));
-        } catch (KeyStoreException ex) {
+            KeyStoreProvider keyStoreProvider = new KeyStoreProvider(new File(this.certPathname));
+            keyStore = keyStoreProvider.getKeystore(this.passwordAsString.toCharArray());
+            defaultAlias = CertUtils.seleccionarAlias(keyStore);
+            Certificate cert = keyStore.getCertificate(defaultAlias);
+            certificateWrapper = new X509CertificateWrapper(cert);
+        } catch (Exception ex) {
+            throw new SignerException(ex);
         }
+    }
 
-        keyStore = ks;
-        defaultAlias = alias;
-        certificate = cert;
-    }
-    
-    public Date getCertExpiryDate() throws CertificateException {
-        if (certificate == null) {
-            throw new CertificateException("CertPathname or password are incorrect");
-        }
-        return certificate.getNotAfter();
-    }
-    
-    public boolean areCertpathnameAndPasswordCorrect() {
-        return validarCertificado(certPathname, passwordAsString);
-    }
-    
-    public boolean isCertValid() throws CertificateException {
-        if (certificate == null) {
-            throw new CertificateException("CertPathname or password are incorrect");
-        }
-        try {
-            certificate.checkValidity();
-        } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
-            return false;
-        }
-        return true;
+    public CertificateWrapper<X509Certificate> getCertificateWrapper() {
+        return certificateWrapper;
     }
 
     public byte[] firmar(File temp, int pagina, int x, Point point) throws Exception {        
@@ -124,7 +108,7 @@ public class FirmadorPDF {
         return signer.sign(docByteArry, "SHA1withRSA", key, certChain, params);
     }
     
-    private static boolean validarCertificado(String pathname, String password) {
+    public static boolean areCertpathnameAndPasswordCorrect(String certPathname, String passwordAsString) {
         try {            
             Path path = Paths.get(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + Long.toString((new Date()).getTime()) + ".pdf");
             try (InputStream in = FirmadorPDF.class.getResourceAsStream("/empty-document.pdf")) {
@@ -132,12 +116,12 @@ public class FirmadorPDF {
             }
             
             File emptyDocument = path.toFile();
-            FirmadorPDF firmador = new FirmadorPDF(pathname, password);
+            FirmadorPDF firmador = FirmadorPDF.getInstance(certPathname, passwordAsString);
             firmador.firmar(emptyDocument, 1);
             // uncommet to create a file in the specified outputPathname
             /*String outputPathname = System.getProperty("java.io.tmpdir") + Long.toString((new Date()).getTime()) + "-signed.pdf";
             try (FileOutputStream fstream = new FileOutputStream(outputPathname)) {
-                fstream.write(firmador.firmar());
+                fstream.write(firmador.firmar(emptyDocument, 1));
             }*/
             
             Files.delete(path);
@@ -147,8 +131,6 @@ public class FirmadorPDF {
         }
         return false;
     }
-    
-    // getters y setters
 
     
     

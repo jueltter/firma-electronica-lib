@@ -38,8 +38,7 @@ public class FirmadorPDFTest {
     }
 
     @Test
-    public void validarCertificadoTest() {
-        FirmadorPDF firmador = new FirmadorPDF(FirmadorPDFTest.class.getResource("/certificado.p12").getFile(), "password");
-        assertEquals(true, firmador.areCertpathnameAndPasswordCorrect());
+    public void validarCertificadoTest() throws SignerException {
+        assertEquals(true, FirmadorPDF.areCertpathnameAndPasswordCorrect(FirmadorPDFTest.class.getResource("/certificado.p12").getFile(), "password"));
     }
 }

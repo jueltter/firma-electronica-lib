@@ -135,10 +135,10 @@ public final class PDFSigner {
             PDFSigner firmador = PDFSigner.getInstance(certPathname, passwordAsString);
             firmador.sign(emptyDocument, 1);
             // uncommet to create a file in the specified outputPathname
-            String outputPathname = System.getProperty("java.io.tmpdir") + Long.toString((new Date()).getTime()) + "-signed.pdf";
+            /*String outputPathname = System.getProperty("java.io.tmpdir") + Long.toString((new Date()).getTime()) + "-signed.pdf";
             try (FileOutputStream fstream = new FileOutputStream(outputPathname)) {
                 fstream.write(firmador.sign(emptyDocument, 1));
-            }
+            }*/
             
             Files.delete(path);
             return true;

@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.gob.bomberosquito.firma_electronica_lib.firma;
+package ec.gob.bomberosquito.firma_electronica_lib.signer;
 
-import ec.gob.bomberosquito.firma_electronica_lib.signer.PDFSigner;
 import ec.gob.bomberosquito.firma_electronica_lib.SignerException;
 import org.junit.After;
 import org.junit.AfterClass;
